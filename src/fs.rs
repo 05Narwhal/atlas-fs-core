@@ -1262,3 +1262,83 @@ mod tests {
         assert!(!fs.info().local_times);
     }
 }
+
+/// One volume of a container.
+#[non_exhaustive]
+pub struct ContainerVolume {
+    /// The volume's name as stored. May be empty.
+    pub name: String,
+    /// What the volume is for, when the container says.
+    pub role: Option<VolumeRole>,
+    /// Whether it can be read.
+    pub state: VolumeState,
+}
+
+impl ContainerVolume {
+    /// A volume called `name`. The struct is `#[non_exhaustive]`, so this is
+    /// how a format (or a test outside the engine) builds one.
+    pub fn new(name: impl Into<String>, role: Option<VolumeRole>, state: VolumeState) -> Self {
+        Self {
+            name: name.into(),
+            role,
+            state,
+        }
+    }
+}
+
+/// What a volume of a container is for. The app orders and dims sidebar
+/// rows by this; it never decides what can be read.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[non_exhaustive]
+pub enum VolumeRole {
+    /// The operating system (read-only, sealed on current macOS).
+    System,
+    /// The user's files.
+    Data,
+    /// Boot support files.
+    Preboot,
+    /// The recovery system.
+    Recovery,
+    /// Swap and sleep images.
+    Vm,
+}
+
+impl VolumeRole {
+    /// The role as the sidebar shows it.
+    pub fn name(self) -> &'static str {
+        match self {
+            Self::System => "System",
+            Self::Data => "Data",
+            Self::Preboot => "Preboot",
+            Self::Recovery => "Recovery",
+            Self::Vm => "VM",
+        }
+    }
+}
+
+/// Whether a volume of a container can be read.
+#[non_exhaustive]
+pub enum VolumeState {
+    /// Mounted.
+    Ready(Arc<dyn FileSystem>),
+    /// Encrypted; a password opens it.
+    Locked(Arc<dyn LockedVolume>),
+    /// It could not be mounted. The other volumes of the container are not
+    /// affected.
+    Failed(Error),
+}
+
+/// An encrypted volume waiting for its password.
+pub trait LockedVolume: Send + Sync {
+    /// The password hint stored on the volume, if any. Answers from memory.
+    fn hint(&self) -> Option<String>;
+
+    /// Mounts the volume with `password`. Blocking, and slow by design (key
+    /// derivation): call it on a background thread.
+    ///
+    /// Fails with `Error::WrongPassword` when the password opens no key on
+    /// the volume, and `Error::Unsupported` when no password can (keys held
+    /// by the hardware of the Mac that wrote it). The implementation keeps
+    /// no copy of `password`.
+    fn unlock(&self, password: &str) -> Result<Arc<dyn FileSystem>>;
+}
