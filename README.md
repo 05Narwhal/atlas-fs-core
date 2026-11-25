@@ -2,28 +2,50 @@
 
 [![crates.io](https://img.shields.io/crates/v/atlas-fs-core.svg)](https://crates.io/crates/atlas-fs-core) [![docs.rs](https://img.shields.io/docsrs/atlas-fs-core)](https://docs.rs/atlas-fs-core) [![CI](https://github.com/05Narwhal/atlas-fs-core/actions/workflows/ci.yml/badge.svg)](https://github.com/05Narwhal/atlas-fs-core/actions/workflows/ci.yml) ![License](https://img.shields.io/crates/l/atlas-fs-core.svg)
 
-The shared traits and types behind the `atlas-*` filesystem and disk image readers.
+**The shared traits and types behind every `atlas-*` filesystem and disk image reader.**
 
-- `BlockSource`: positional, thread-safe reads over a device, an image file, memory or a slice of any of them.
-  `MemSource`, `Slice` and `FileSource` implement it.
-- `FileSystem`: a tree of nodes named by `NodeId`, with `lookup`, `read_dir` (a `DirStream` that fills
-  `DirBatch`es), `metadata`, `open` (a `BlockSource` over a file's bytes) and optional extents, extended
-  attributes, snapshots and a whole-volume scan.
-- `Error`: the one error type every reader returns. Corrupt input is an error, never a panic.
+`atlas-fs-core` is the small foundation the other crates stand on. It defines how bytes are read from a device or an image, what a read-only filesystem looks like to a caller, and one error type that every reader returns. A format crate such as `atlas-hfsplus` implements `FileSystem` on top of a `BlockSource`; an application written against these traits can open any of them the same way.
 
-The crate has no `unsafe` code and one dependency (`thiserror`). Format crates such as `atlas-hfsplus`
-implement `FileSystem` on top of a `BlockSource`.
+## What it provides
 
-```rust
+- **`io::block::BlockSource`**: positional, thread-safe reads over a device, an image file, memory or a slice of any of them. `FileSource`, `MemSource` and `Slice` implement it; so do the disk image and encryption crates, which present a decoded disk as a `BlockSource`.
+- **`fs::FileSystem`**: a read-only tree of nodes named by `NodeId`. It offers `lookup`, `read_dir` (a `DirStream` that fills `DirBatch`es, so a large folder never needs one huge allocation), `metadata`, and `open` (a `BlockSource` over a file's bytes). Extents, extended attributes, snapshots and a whole-volume scan are optional capabilities.
+- **Container types**: `ContainerVolume`, `VolumeRole`, `VolumeState` and `LockedVolume` describe containers that hold several volumes (APFS) or volumes that need unlocking (LUKS, BitLocker).
+- **`error::Error`**: the one error type every reader returns. Corrupt input is reported as an error with a location and a kind, never as a panic.
+
+## Quick start
+
+```rust,no_run
 use atlas_fs_core::io::block::{BlockSource, MemSource};
 
-let source = MemSource::new(vec![1u8, 2, 3, 4]);
-let mut buf = [0u8; 2];
-source.read_at(1, &mut buf).unwrap();
-assert_eq!(buf, [2, 3]);
-// Reads past the end are errors.
-assert!(source.read_at(3, &mut buf).is_err());
+let source = MemSource::new(vec![0u8, 1, 2, 3, 4, 5, 6, 7]);
+assert_eq!(source.len(), 8);
+let mut buf = [0u8; 4];
+source.read_at(2, &mut buf).unwrap();
+assert_eq!(buf, [2, 3, 4, 5]);
+assert!(source.read_at(6, &mut buf).is_err());
 ```
+
+`MemSource` is also what the other crates' test suites build their synthetic volumes on.
+
+## Writing a reader
+
+1. Take an `Arc<dyn BlockSource>` in your `mount` function.
+2. Validate every length, offset and count you read from it, and return `Error` on damage.
+3. Implement `FileSystem` for your volume type, giving each file a stable `NodeId`.
+
+The other `atlas-*` crates follow exactly this shape, so they make good examples.
+
+## Dependencies
+
+One: `thiserror`. No `unsafe`.
+
+## Safety and robustness
+
+- **No `unsafe`.** The crate is `#![forbid(unsafe_code)]`.
+- **On-disk bytes are hostile.** Every length, offset and count read from a disk is validated before use. Damage is returned as an error, never a panic, an unchecked index or an unbounded loop.
+- **Lints enforce it.** Clippy's `indexing_slicing`, `arithmetic_side_effects`, `unwrap_used`, `expect_used` and `panic` lints are on for the library code.
+- **Read-only.** Nothing in this crate writes to a disk or image.
 
 ## Install
 
@@ -32,7 +54,9 @@ assert!(source.read_at(3, &mut buf).is_err());
 atlas-fs-core = "26.0.1-a"
 ```
 
-Minimum supported Rust version: 1.88.
+Versions follow `26.MAJOR.MINOR-STAGE`: the year, the major and minor version, and a stage letter (`a` alpha, `b` beta, `s` stable). Cargo treats a stage suffix as a pre-release, so name the version exactly as above.
+
+Minimum supported Rust version: 1.88 (edition 2024).
 
 ## Licence
 
