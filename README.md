@@ -29,7 +29,7 @@ assert!(source.read_at(3, &mut buf).is_err());
 
 ```toml
 [dependencies]
-atlas-fs-core = "0.1"
+atlas-fs-core = "26.0.1-a"
 ```
 
 Minimum supported Rust version: 1.88.
