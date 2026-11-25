@@ -15,7 +15,7 @@
 
 ## Quick start
 
-```rust,no_run
+```rust
 use atlas_fs_core::io::block::{BlockSource, MemSource};
 
 let source = MemSource::new(vec![0u8, 1, 2, 3, 4, 5, 6, 7]);
