@@ -1,6 +1,6 @@
 # atlas-fs-core
 
-[![crates.io](https://img.shields.io/crates/v/atlas-fs-core.svg)](https://crates.io/crates/atlas-fs-core) [![docs.rs](https://img.shields.io/docsrs/atlas-fs-core)](https://docs.rs/atlas-fs-core) [![CI](https://github.com/05Narwhal/atlas-fs-core/actions/workflows/ci.yml/badge.svg)](https://github.com/05Narwhal/atlas-fs-core/actions/workflows/ci.yml) ![License](https://img.shields.io/crates/l/atlas-fs-core.svg)
+[![crates.io](https://img.shields.io/crates/v/atlas-fs-core.svg)](https://crates.io/crates/atlas-fs-core) [![docs](https://img.shields.io/badge/docs-disk--atlas.julianloy.com-blue)](https://disk-atlas.julianloy.com/docs) [![CI](https://github.com/05Narwhal/atlas-fs-core/actions/workflows/ci.yml/badge.svg)](https://github.com/05Narwhal/atlas-fs-core/actions/workflows/ci.yml) ![License](https://img.shields.io/crates/l/atlas-fs-core.svg)
 
 **The shared traits and types behind every `atlas-*` filesystem and disk image reader.**
 
@@ -51,12 +51,16 @@ One: `thiserror`. No `unsafe`.
 
 ```toml
 [dependencies]
-atlas-fs-core = "26.0.1-a"
+atlas-fs-core = "26.0.2-a"
 ```
 
 Versions follow `26.MAJOR.MINOR-STAGE`: the year, the major and minor version, and a stage letter (`a` alpha, `b` beta, `s` stable). Cargo treats a stage suffix as a pre-release, so name the version exactly as above.
 
 Minimum supported Rust version: 1.88 (edition 2024).
+
+## Documentation
+
+Guides and reference live at [disk-atlas.julianloy.com/docs](https://disk-atlas.julianloy.com/docs).
 
 ## Licence
 
@@ -91,4 +95,4 @@ Licensed under either of Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-A
 | [`atlas-luks`](https://github.com/05Narwhal/atlas-luks) | Read LUKS1 and LUKS2 encrypted volumes: keyslot unlock with PBKDF2 or Argon2, AES-XTS and AES-CBC sector decryption |
 | [`atlas-bitlocker`](https://github.com/05Narwhal/atlas-bitlocker) | Read BitLocker encrypted volumes: FVE metadata, password and recovery-password unlock, AES-XTS and AES-CBC sector decryption |
 
-Made by Julian A. Loy · [julianloy.com](https://julianloy.com)
+Made by Julian A. Loy · [julianloy.com](https://julianloy.com) · [Documentation](https://disk-atlas.julianloy.com/docs)

@@ -1,12 +1,12 @@
 [package]
 name = "atlas-fs-core"
-version = "26.0.1-a"
+version = "26.0.2-a"
 edition = "2024"
 rust-version = "1.88"
 license = "MIT OR Apache-2.0"
 description = "Core traits and types for reading filesystems and disk images: BlockSource, FileSystem, DirStream and one error type."
 repository = "https://github.com/05Narwhal/atlas-fs-core"
-homepage = "https://julianloy.com"
+documentation = "https://disk-atlas.julianloy.com/docs"
 readme = "README.md"
 keywords = ["filesystem", "disk", "block-device", "parser", "forensics"]
 categories = ["filesystem", "parser-implementations"]
