@@ -1,6 +1,6 @@
 # atlas-fs-core
 
-<!-- badges -->[![crates.io](https://img.shields.io/crates/v/atlas-fs-core.svg)](https://crates.io/crates/atlas-fs-core) [![docs.rs](https://img.shields.io/docsrs/atlas-fs-core)](https://docs.rs/atlas-fs-core) [![CI](https://github.com/05Narwhal/atlas-fs-core/actions/workflows/ci.yml/badge.svg)](https://github.com/05Narwhal/atlas-fs-core/actions/workflows/ci.yml) ![License](https://img.shields.io/crates/l/atlas-fs-core.svg)
+[![crates.io](https://img.shields.io/crates/v/atlas-fs-core.svg)](https://crates.io/crates/atlas-fs-core) [![docs.rs](https://img.shields.io/docsrs/atlas-fs-core)](https://docs.rs/atlas-fs-core) [![CI](https://github.com/05Narwhal/atlas-fs-core/actions/workflows/ci.yml/badge.svg)](https://github.com/05Narwhal/atlas-fs-core/actions/workflows/ci.yml) ![License](https://img.shields.io/crates/l/atlas-fs-core.svg)
 
 The shared traits and types behind the `atlas-*` filesystem and disk image readers.
 
